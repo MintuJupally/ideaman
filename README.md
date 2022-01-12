@@ -2,6 +2,13 @@
 
 An Idea Management Solution made using React Js and Material UI, with the help of react-rnd and react-draggable npm packages.
 
+## Features
+
+- Ability to add/remove/edit highlights
+- Ability to create buckets to group highlights in
+- Ability to group highlights into buckets
+- Ability to move highlights from one bucket to another.
+
 ## To setup the project locally
 
 To setup and run the project locally, the repo is to be cloned followed by the following commands:
