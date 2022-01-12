@@ -17,7 +17,7 @@ import { makeStyles } from "@mui/styles";
 
 import { Rnd } from "react-rnd";
 
-import Menu from "./Menu";
+import Menu from "../components/Menu";
 
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -142,7 +142,6 @@ const BoardView = ({ highlights, onChange, deleteHighlight }) => {
         <DialogTitle>Edit Highlight</DialogTitle>
         <DialogContent>
           <TextField
-            autoFocus
             margin="dense"
             id="title"
             label="Ttile"
@@ -167,6 +166,18 @@ const BoardView = ({ highlights, onChange, deleteHighlight }) => {
             value={comp ? comp.body : ""}
             onChange={(event) => {
               setComp({ ...comp, body: event.target.value });
+            }}
+          />
+          <TextField
+            margin="dense"
+            id="bucket-select"
+            label="Bucket"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={comp && comp.bucket ? comp.bucket : ""}
+            onChange={(event) => {
+              setComp({ ...comp, bucket: event.target.value });
             }}
           />
         </DialogContent>

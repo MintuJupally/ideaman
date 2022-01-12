@@ -9,7 +9,7 @@ const colors = [
   { bgColor: "#ff0000", color: "white" },
   { bgColor: "#e6e6fa", color: "black" },
   { bgColor: "#ffd700", color: "black" },
-  { bgColor: "#ffa500", color: "white" },
+  { bgColor: "#ffa500", color: "black" },
   { bgColor: "#00ffff", color: "white" },
   { bgColor: "#ff7373", color: "white" },
   { bgColor: "#40e0d0", color: "white" },

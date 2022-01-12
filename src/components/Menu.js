@@ -14,8 +14,6 @@ const Menu = ({ onDelete, updateFocus, updateEdit }) => {
   }, [show]);
 
   useEffect(() => {
-    console.log({ id });
-
     updateFocus(id);
   }, [id]);
 
