@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
@@ -14,11 +15,12 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import ViewColumnRoundedIcon from "@mui/icons-material/ViewColumnRounded";
 import ScatterPlotRoundedIcon from "@mui/icons-material/ScatterPlotRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 
 import BoardView from "../BoardView";
 import BucketView from "../BucketView";
 import colors from "../assets/colors";
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 
 const useStyles = makeStyles((theme) => ({
   board: {
@@ -51,14 +53,13 @@ const newHighlight = {
   bucket: null,
 };
 
-let set = false;
-
-const Board = ({ title = "Untitled" }) => {
+const Board = () => {
+  const navigate = useNavigate();
   const classes = useStyles();
+  const location = useLocation();
 
-  const [highlights, setHighlights] = useState(null);
+  const [board, setBoard] = useState(null);
   const [edit, setEdit] = useState(false);
-  const [currTitle, setCurrTitle] = useState(title);
   const [bucketView, setBucketView] = useState(false);
 
   const [zoom, setZoom] = useState(100);
@@ -70,141 +71,188 @@ const Board = ({ title = "Untitled" }) => {
   // }, []);
 
   const removeHighlight = (id) => {
-    setHighlights(highlights.filter((el) => el.id !== id));
+    setBoard({
+      ...board,
+      highlights: board.highlights.filter((el) => el.id !== id),
+    });
   };
 
   useEffect(() => {
-    document.title = currTitle + " | Ideaman";
+    console.log({ board });
 
-    if (set) {
+    if (board) {
       window.localStorage.setItem(
-        "bucket",
-        JSON.stringify({ title: currTitle, highlights })
+        board.id,
+        JSON.stringify({ ...board, time: Date.now() })
       );
 
-      console.log("saving " + currTitle);
+      console.log("saving ", { board });
     }
-  }, [currTitle]);
+  }, [board]);
 
   useEffect(() => {
-    console.log({ highlights });
+    const pieces = location.pathname.split("/");
+    console.log(pieces);
 
-    if (highlights) {
+    let id = null;
+    if (pieces.length === 3) id = pieces[2];
+
+    let brd = null;
+    if (id) brd = JSON.parse(window.localStorage.getItem(id));
+
+    console.log({ id, board });
+
+    if (brd) {
+      setBoard(brd);
+    } else if (!id) {
+      const newId = uuidv4();
+
       window.localStorage.setItem(
-        "bucket",
-        JSON.stringify({ title: currTitle, highlights })
+        newId,
+        JSON.stringify({
+          id: newId,
+          title: "Untitled",
+          highlights: [],
+          time: Date.now(),
+        })
       );
 
-      set = true;
+      let boards = JSON.parse(window.localStorage.getItem("boards"));
+      if (!boards) boards = [];
+      boards.push(newId);
 
-      console.log("saving " + currTitle);
+      window.localStorage.setItem("boards", JSON.stringify(boards));
+
+      navigate(`/board/${newId}`);
+    } else {
+      navigate("/boards");
     }
-  }, [highlights]);
+  }, [location]);
 
-  useEffect(() => {
-    let bucket = JSON.parse(window.localStorage.getItem("bucket"));
-
-    console.log("data from storage");
-    console.log(bucket);
-
-    if (bucket) {
-      setCurrTitle(bucket.title);
-      setHighlights(bucket.highlights || []);
-    } else setHighlights([]);
-  }, []);
-
-  return (
-    <div className={classes.board}>
-      <div className={classes.title}>
-        {edit ? (
-          <TextField
-            id="boardname"
-            type="text"
-            value={currTitle}
-            variant="standard"
-            inputProps={{
-              style: { fontSize: "2em", padding: 0 },
-            }}
-            onChange={(event) => {
-              setCurrTitle(event.target.value);
-            }}
-          />
-        ) : (
-          <Typography variant="h4">{currTitle}</Typography>
-        )}
-        <IconButton
-          onClick={() => {
-            setEdit(!edit);
-          }}
-        >
-          {!edit ? <EditRoundedIcon /> : <CheckRoundedIcon />}
-        </IconButton>
-      </div>
-
-      <div className={classes.toolbar}>
-        <Fab
-          size="medium"
-          onClick={() => {
-            setBucketView(!bucketView);
-          }}
-          style={{ margin: "0px 5px" }}
-        >
-          {bucketView ? <ViewColumnRoundedIcon /> : <ScatterPlotRoundedIcon />}
-        </Fab>
-        <Fab
-          color="primary"
-          onClick={() => {
-            setHighlights([
-              ...highlights,
-              {
-                ...newHighlight,
-                id: uuidv4(),
-                x: window.innerWidth / 2 - 80,
-                y: window.innerHeight / 2 - 100,
-                ...colors[parseInt(Math.random() * colors.length)],
-              },
-            ]);
-          }}
-          size="medium"
-        >
-          <AddRoundedIcon />
-        </Fab>
-      </div>
-      <div id="main" style={{ transform: `scale(${zoom / 100})` }}>
-        {highlights ? (
-          !bucketView ? (
-            <BoardView
-              highlights={highlights}
-              onChange={(id, conf) => {
-                setHighlights(
-                  highlights.map((el) => {
-                    if (el.id === id) return { ...el, ...conf };
-                    return el;
-                  })
-                );
+  if (board)
+    return (
+      <div className={classes.board}>
+        <div className={classes.title}>
+          {edit ? (
+            <TextField
+              id="boardname"
+              type="text"
+              value={board.title}
+              variant="standard"
+              inputProps={{
+                style: { fontSize: "2em", padding: 0 },
               }}
-              deleteHighlight={removeHighlight}
+              onChange={(event) => {
+                setBoard({ ...board, title: event.target.value });
+              }}
             />
           ) : (
-            <BucketView
-              highlights={highlights}
-              onChange={(id, conf) => {
-                setHighlights(
-                  highlights.map((el) => {
-                    if (el.id === id) return { ...el, ...conf };
-                    return el;
-                  })
-                );
-              }}
-              deleteHighlight={removeHighlight}
-            />
-          )
-        ) : (
-          <div>
-            <CircularProgress />
-          </div>
-        )}
+            <Typography variant="h4">{board.title}</Typography>
+          )}
+          <IconButton
+            onClick={() => {
+              setEdit(!edit);
+            }}
+          >
+            {!edit ? <EditRoundedIcon /> : <CheckRoundedIcon />}
+          </IconButton>
+        </div>
+
+        <div className={classes.toolbar}>
+          <Fab
+            size="medium"
+            onClick={() => {
+              navigate("/boards");
+            }}
+          >
+            <HomeRoundedIcon color="primary" />
+          </Fab>
+          <Fab
+            size="medium"
+            onClick={() => {
+              setBucketView(!bucketView);
+            }}
+            style={{ margin: "0px 5px" }}
+          >
+            {bucketView ? (
+              <ViewColumnRoundedIcon color="primary" />
+            ) : (
+              <ScatterPlotRoundedIcon color="primary" />
+            )}
+          </Fab>
+          <Fab
+            color="primary"
+            onClick={() => {
+              setBoard({
+                ...board,
+                highlights: [
+                  ...board.highlights,
+                  {
+                    ...newHighlight,
+                    id: uuidv4(),
+                    x: window.innerWidth / 2 - 80,
+                    y: window.innerHeight / 2 - 100,
+                    ...colors[parseInt(Math.random() * colors.length)],
+                  },
+                ],
+              });
+            }}
+            size="medium"
+          >
+            <AddRoundedIcon />
+          </Fab>
+        </div>
+
+        <div id="main" style={{ transform: `scale(${zoom / 100})` }}>
+          {board ? (
+            !bucketView ? (
+              <BoardView
+                highlights={board.highlights}
+                onChange={(id, conf) => {
+                  setBoard({
+                    ...board,
+                    highlights: board.highlights.map((el) => {
+                      if (el.id === id) return { ...el, ...conf };
+                      return el;
+                    }),
+                  });
+                }}
+                deleteHighlight={removeHighlight}
+              />
+            ) : (
+              <BucketView
+                highlights={board.highlights}
+                onChange={(id, conf) => {
+                  setBoard({
+                    ...board,
+                    highlights: board.highlights.map((el) => {
+                      if (el.id === id) return { ...el, ...conf };
+                      return el;
+                    }),
+                  });
+                }}
+                deleteHighlight={removeHighlight}
+              />
+            )
+          ) : (
+            <div>
+              <CircularProgress />
+            </div>
+          )}
+        </div>
       </div>
+    );
+
+  return (
+    <div
+      className={classes.board}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <CircularProgress />
     </div>
   );
 };

@@ -115,6 +115,7 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
           padding: "20px",
           boxSizing: "border-box",
           margin: "2px",
+          cursor: "default",
           boxShadow: focus
             ? "0px 0x 5px 5px blue !important"
             : "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
@@ -159,7 +160,20 @@ const Bucket = ({ bucket, index, buckets, onChange }) => {
         padding: "20px 0px 30px 0px",
       }}
     >
-      <Typography style={{ fontSize: "1.2em" }}>{bucket[0]}</Typography>
+      <Typography
+        style={{
+          fontSize: "1.2em",
+          border: "1px solid black",
+          width: "100px",
+          marginBottom: "20px",
+          backgroundColor: "rgb(240,240,240)",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {bucket[0]}
+      </Typography>
       {bucket[1].map((highlight) => (
         <HighlightCard
           highlight={highlight}
@@ -189,7 +203,7 @@ const BucketView = ({ highlights, onChange }) => {
   });
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", marginLeft: "30px" }}>
       {Object.entries(buckets).map((bucket, index) => {
         return (
           <Bucket
@@ -212,7 +226,9 @@ const BucketView = ({ highlights, onChange }) => {
           padding: "20px 0px 30px 0px",
         }}
       >
-        <Typography style={{ fontSize: "1.2em" }}>Ungrouped</Typography>
+        <Typography style={{ fontSize: "1.2em", marginBottom: "20px" }}>
+          Ungrouped
+        </Typography>
 
         {rest.map((highlight, index) => {
           return (
