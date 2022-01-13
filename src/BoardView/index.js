@@ -84,7 +84,7 @@ const HighlightCard = ({ highlight, alter, focus }) => {
   );
 };
 
-const BoardView = ({ highlights, onChange, deleteHighlight }) => {
+const BoardView = ({ highlights, updateHighlight, deleteHighlight }) => {
   const classes = useStyles();
 
   const [open, setOpen] = useState(false);
@@ -120,7 +120,7 @@ const BoardView = ({ highlights, onChange, deleteHighlight }) => {
             key={highlight.id}
             focus={focus === highlight.id}
             alter={(config) => {
-              onChange(highlight.id, config);
+              updateHighlight(highlight.id, config);
             }}
           />
         );
@@ -198,7 +198,7 @@ const BoardView = ({ highlights, onChange, deleteHighlight }) => {
           </Fab>
           <Fab
             onClick={() => {
-              onChange(comp.id, { ...comp });
+              updateHighlight(comp.id, { ...comp });
 
               handleClose();
             }}

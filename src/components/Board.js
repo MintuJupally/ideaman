@@ -9,6 +9,7 @@ import {
   IconButton,
   TextField,
   CircularProgress,
+  ClickAwayListener,
 } from "@mui/material";
 
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -132,31 +133,37 @@ const Board = () => {
   if (board)
     return (
       <div className={classes.board}>
-        <div className={classes.title}>
-          {edit ? (
-            <TextField
-              id="boardname"
-              type="text"
-              value={board.title}
-              variant="standard"
-              inputProps={{
-                style: { fontSize: "2em", padding: 0 },
+        <ClickAwayListener
+          onClickAway={() => {
+            if (edit) setEdit(false);
+          }}
+        >
+          <div className={classes.title}>
+            {edit ? (
+              <TextField
+                id="boardname"
+                type="text"
+                value={board.title}
+                variant="standard"
+                inputProps={{
+                  style: { fontSize: "2em", padding: 0 },
+                }}
+                onChange={(event) => {
+                  setBoard({ ...board, title: event.target.value });
+                }}
+              />
+            ) : (
+              <Typography variant="h4">{board.title}</Typography>
+            )}
+            <IconButton
+              onClick={() => {
+                setEdit(!edit);
               }}
-              onChange={(event) => {
-                setBoard({ ...board, title: event.target.value });
-              }}
-            />
-          ) : (
-            <Typography variant="h4">{board.title}</Typography>
-          )}
-          <IconButton
-            onClick={() => {
-              setEdit(!edit);
-            }}
-          >
-            {!edit ? <EditRoundedIcon /> : <CheckRoundedIcon />}
-          </IconButton>
-        </div>
+            >
+              {!edit ? <EditRoundedIcon /> : <CheckRoundedIcon />}
+            </IconButton>
+          </div>
+        </ClickAwayListener>
 
         <div className={classes.toolbar}>
           <Fab
@@ -208,7 +215,7 @@ const Board = () => {
             !bucketView ? (
               <BoardView
                 highlights={board.highlights}
-                onChange={(id, conf) => {
+                updateHighlight={(id, conf) => {
                   setBoard({
                     ...board,
                     highlights: board.highlights.map((el) => {

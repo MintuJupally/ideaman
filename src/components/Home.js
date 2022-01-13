@@ -38,6 +38,31 @@ const Home = () => {
     } else setBoards([]);
   }, []);
 
+  const showTime = (el) => {
+    let time = el.time;
+
+    let dur = parseInt((Date.now() - time) / 1000);
+
+    if (dur < 60) {
+      return dur + " s ago";
+    }
+    dur = parseInt(dur / 60);
+
+    if (dur < 60) return dur + " min ago";
+    dur = parseInt(dur / 60);
+
+    if (dur < 24) return dur + " h ago";
+    dur = parseInt(dur / 24);
+
+    if (dur < 31) return dur + " d ago";
+    dur = parseInt(dur / 30.437);
+
+    if (dur < 12) return dur + " m ago";
+    dur = parseInt(dur / 12);
+
+    return dur + " y ago";
+  };
+
   return (
     <div>
       {boards ? (
@@ -87,6 +112,7 @@ const Home = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    position: "relative",
                   }}
                   onClick={() => {
                     navigate(`/board/${board.id}`);
@@ -104,6 +130,18 @@ const Home = () => {
                       {board.title}
                     </Typography>
                   </div>
+                  <Typography
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      right: "5px",
+                      fontStyle: "italic",
+                      color: "grey",
+                      fontSize: "0.9em",
+                    }}
+                  >
+                    {showTime(board)}
+                  </Typography>
                 </Card>
               ))}
             </div>
