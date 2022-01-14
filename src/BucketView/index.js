@@ -47,8 +47,6 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
         position.y > rect.y &&
         position.y < rect.y + rect.height
       ) {
-        console.log({ i });
-
         return buckets[i];
       }
     }
@@ -70,8 +68,6 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
       //   console.log(e, data);
       // }}
       onStop={(e, data) => {
-        console.log("from stop");
-
         let el = null;
         if (
           e.target.ariaLabel &&
@@ -102,16 +98,12 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
           };
 
           const bucket = findBucket(center);
-          console.log({ bucket });
 
           if (
             !bucket ||
             !highlight.bucket ||
             bucket.id !== highlight.bucket.id
           ) {
-            console.log("inside");
-
-            console.log(alter);
             alter({ bucket });
             setPos({ x: data.lastX, y: data.lastY });
           }
@@ -158,6 +150,7 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
 
 const Bucket = ({
   bucket,
+  highlights,
   index,
   buckets,
   onChange,
@@ -234,7 +227,6 @@ const Bucket = ({
           key={highlight.id}
           buckets={buckets}
           alter={(config) => {
-            console.log({ id: highlight.id, config });
             onChange(highlight.id, config);
           }}
         />
@@ -293,25 +285,25 @@ const Bucket = ({
           <Fab
             onClick={() => {
               const bkts = buckets.filter((el) => el.id !== bucket[0]);
-              console.log(bkts);
 
-              console.log({ bucket });
+              let hlts = [...highlights];
 
               if (choice === "0") {
                 console.log("updating ...");
 
                 bucket[1].forEach((highlight) => {
-                  onChange(highlight.id, { bucket: null });
+                  const ind = hlts.findIndex((el) => el.id === highlight.id);
+                  hlts[ind] = { ...hlts[ind], bucket: null };
                 });
               } else {
                 console.log("deleting ...");
 
                 bucket[1].forEach((highlight) => {
-                  deleteHighlight(highlight.id);
+                  const ind = hlts.findIndex((el) => el.id === highlight.id);
+                  hlts.splice(ind, 1);
                 });
               }
-
-              updateBoard({ buckets: bkts });
+              updateBoard({ highlights: hlts, buckets: bkts });
 
               setOpen(false);
               setChoice("0");
@@ -362,6 +354,7 @@ const BucketView = ({
         return (
           <Bucket
             bucket={bucket}
+            highlights={highlights}
             key={"bucket - " + index}
             index={index}
             buckets={buckets}

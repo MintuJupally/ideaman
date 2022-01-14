@@ -234,6 +234,7 @@ const Board = () => {
                 buckets={board.buckets}
                 highlights={board.highlights}
                 changeHighlightBucket={(id, conf) => {
+                  console.log("from changeHighlightBucket");
                   console.log({ id, conf });
 
                   let curr = {
@@ -249,19 +250,11 @@ const Board = () => {
 
                   console.log(curr);
                   setBoard(curr);
-                  console.log(board);
-                  // setBoard((board) => ({
-                  //   ...board,
-                  //   highlights: board.highlights.map((el) => {
-                  //     if (el.id === id) {
-                  //       console.log({ ...el, ...conf });
-                  //       return { ...el, ...conf };
-                  //     }
-                  //     return el;
-                  //   }),
-                  // }));
                 }}
                 updateBoard={(data) => {
+                  console.log("from updateBoard");
+                  console.log({ data });
+
                   setBoard({ ...board, ...data });
                 }}
                 deleteHighlight={removeHighlight}

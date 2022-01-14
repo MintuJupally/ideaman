@@ -101,10 +101,6 @@ const BucketSelector = ({
     updateNewBucket(newBucket);
   }, [newBucket]);
 
-  useEffect(() => {
-    console.log({ comp });
-  }, [comp]);
-
   return (
     <div style={{ marginTop: "20px" }}>
       {!newBucket && buckets && buckets.length > 0 && (
