@@ -4,10 +4,12 @@ An Idea Management Solution made using React Js and Material UI, with the help o
 
 ## Features
 
-- Ability to add/remove/edit highlights
-- Ability to create buckets to group highlights in
-- Ability to group highlights into buckets
-- Ability to move highlights from one bucket to another.
+- Create multiple boards
+- Add/remove/edit highlights in boards
+- Create buckets to group highlights
+- Group highlights into buckets
+- Delete buckets
+- Move highlights from one bucket to another.
 
 ## To setup the project locally
 
@@ -27,20 +29,30 @@ You may also see any lint errors in the console.
 
 ## Screenshots
 
+Sample Board
+![image](https://user-images.githubusercontent.com/59505795/149531662-9a1d3a6a-ac0d-48a4-bdaf-61837ad3b415.png)
+
+Create Multiple boards
+![image](https://user-images.githubusercontent.com/59505795/149530142-06570e1c-167a-4235-be56-7296971af870.png)
+
 New Highlight
-![image](https://user-images.githubusercontent.com/59505795/149163373-9194503c-3d31-4e56-900f-1b5e7684bbe6.png)
+![image](https://user-images.githubusercontent.com/59505795/149530277-fcccae1b-80cb-41c9-bd1b-7a5523d887cf.png)
 
 Draggable, resizable and custom context menu to Edit and Delete highlights
-![image](https://user-images.githubusercontent.com/59505795/149163633-19095a2a-11ef-4c68-ae97-ca6674082f33.png)
+![image](https://user-images.githubusercontent.com/59505795/149530343-04228c8d-f2b0-4135-a1d5-d6a013aa13ba.png)
 
 Edit Highlight Dialog
-![image](https://user-images.githubusercontent.com/59505795/149163807-90925f5d-ffed-4001-8c2c-5aca0c2a27a2.png)
+![image](https://user-images.githubusercontent.com/59505795/149530548-68d040cc-9f58-455d-9f38-9293f1103ee8.png)
 
 Editable Board title
-![image](https://user-images.githubusercontent.com/59505795/149164409-ed8dc971-0e69-47df-bf73-3cf25afe4a4a.png)
+![image](https://user-images.githubusercontent.com/59505795/149530660-62c4e038-878b-4b33-a060-93ce5dd35fcc.png)
 
 Toggle between Board and Bucket views
-![image](https://user-images.githubusercontent.com/59505795/149164768-968c2fa0-9076-454e-bc23-ab5a263a554d.png)
+![image](https://user-images.githubusercontent.com/59505795/149531555-d7e9317b-dd35-408d-8e2f-7612170a9bf9.png)
+
+Delete Bucket
+![image](https://user-images.githubusercontent.com/59505795/149531929-add7b696-9eaa-44e6-a509-60a80c1ec6e6.png)
+
 
 
 
