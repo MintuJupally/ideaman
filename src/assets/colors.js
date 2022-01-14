@@ -36,7 +36,7 @@ const colors = [
   { bgColor: "#cccccc", color: "black" },
   { bgColor: "#00ff00", color: "white" },
   { bgColor: "#20b2aa", color: "white" },
-  { bgColor: "#ffc3a0", color: "white" },
+  { bgColor: "#ffc3a0", color: "black" },
   { bgColor: "#333333", color: "white" },
   { bgColor: "#66cdaa", color: "white" },
   { bgColor: "#ff6666", color: "white" },

@@ -8,13 +8,17 @@ import {
   DialogContentText,
   DialogTitle,
   Fab,
+  FormControlLabel,
   IconButton,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from "@mui/material";
 import Draggable from "react-draggable";
 
 import { makeStyles } from "@mui/styles";
+import { CheckRounded, CloseRounded } from "@mui/icons-material";
 
 const useStyles = makeStyles((theme) => ({
   highlight: {
@@ -37,15 +41,13 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
       const buckCont = document.getElementById(`bucket-container-${i}`);
       const rect = buckCont.getBoundingClientRect();
 
-      console.log(rect);
-
       if (
         position.x > rect.x &&
         position.x < rect.x + rect.width &&
         position.y > rect.y &&
         position.y < rect.y + rect.height
       ) {
-        return Object.entries(buckets)[i][0];
+        return buckets[i];
       }
     }
 
@@ -97,9 +99,11 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
 
           const bucket = findBucket(center);
 
-          console.log(bucket);
-
-          if (bucket !== highlight.bucket) {
+          if (
+            !bucket ||
+            !highlight.bucket ||
+            bucket.id !== highlight.bucket.id
+          ) {
             alter({ bucket });
             setPos({ x: data.lastX, y: data.lastY });
           }
@@ -144,12 +148,33 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
   );
 };
 
-const Bucket = ({ bucket, index, buckets, onChange }) => {
+const Bucket = ({
+  bucket,
+  index,
+  buckets,
+  onChange,
+  updateBoard,
+  deleteHighlight,
+}) => {
+  const [open, setOpen] = useState(false);
+  const [choice, setChoice] = useState("0");
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const getBucketName = (id) => {
+    let bkt = buckets.find((el) => el.id === id);
+
+    if (bkt) return bkt.name;
+    return "Deleted Bucket";
+  };
+
   return (
     <div
       id={"bucket-container-" + index}
       style={{
-        width: "250px",
+        width: "200px",
         margin: "5px",
         marginTop: "5em",
         display: "flex",
@@ -157,23 +182,44 @@ const Bucket = ({ bucket, index, buckets, onChange }) => {
         flexDirection: "column",
         backgroundColor: "lightgrey",
         borderRadius: "5px",
-        padding: "20px 0px 30px 0px",
+        padding: "20px 25px 30px 25px",
+        // position: "relative",
       }}
     >
-      <Typography
+      <div
         style={{
-          fontSize: "1.2em",
-          border: "1px solid black",
-          width: "100px",
-          marginBottom: "20px",
-          backgroundColor: "rgb(240,240,240)",
-          textOverflow: "ellipsis",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
+          position: "relative",
+          width: "200px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        {bucket[0]}
-      </Typography>
+        <Typography
+          style={{
+            fontSize: "1.2em",
+            border: "1px solid black",
+            width: "100px",
+            marginBottom: "20px",
+            backgroundColor: "rgb(240,240,240)",
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {getBucketName(bucket[0])}
+        </Typography>
+        <IconButton
+          style={{ position: "absolute", right: 0, top: 0, color: "#e31d1d" }}
+          size="small"
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          <CloseRounded />
+        </IconButton>
+      </div>
+
       {bucket[1].map((highlight) => (
         <HighlightCard
           highlight={highlight}
@@ -184,34 +230,135 @@ const Bucket = ({ bucket, index, buckets, onChange }) => {
           }}
         />
       ))}
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <div>
+            <RadioGroup
+              aria-label="gender"
+              value={choice}
+              name="radio-buttons-group"
+              onChange={(e) => {
+                setChoice(e.target.value);
+              }}
+            >
+              <FormControlLabel
+                value="0"
+                control={<Radio />}
+                label="Delete bucket only, not the highlights"
+              />
+              <Typography style={{ color: "grey", paddingLeft: "30px" }}>
+                Just the bucket is deleted, all the associated highlights are
+                retained under Ungrouped
+              </Typography>
+              <FormControlLabel
+                value="1"
+                control={<Radio />}
+                label="Delete bucket and its highlights"
+              />
+              <Typography style={{ color: "grey", paddingLeft: "30px" }}>
+                The bucket along with all the highlights associated with the
+                bucket are deleted
+              </Typography>
+            </RadioGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Fab
+            onClick={() => {
+              setChoice("0");
+              setOpen(false);
+            }}
+            color="error"
+            variant="extended"
+            size="small"
+            style={{
+              color: "red",
+              backgroundColor: "white",
+            }}
+          >
+            <CloseRounded />
+            &nbsp;&nbsp;CANCEL&nbsp;&nbsp;
+          </Fab>
+          <Fab
+            onClick={() => {
+              const bkts = buckets.filter((el) => el.id !== bucket[0]);
+              console.log(bkts);
+
+              console.log({ bucket });
+
+              if (choice === "0") {
+                console.log("updating ...");
+
+                bucket[1].forEach((highlight) => {
+                  onChange(highlight.id, { bucket: null });
+                });
+              } else {
+                console.log("deleting ...");
+
+                bucket[1].forEach((highlight) => {
+                  deleteHighlight(highlight.id);
+                });
+              }
+
+              updateBoard({ buckets: bkts });
+
+              setOpen(false);
+              setChoice("0");
+            }}
+            size="small"
+            style={{
+              color: "white",
+              backgroundColor: "green",
+            }}
+            variant="extended"
+          >
+            <CheckRounded />
+            &nbsp;&nbsp;CONFIRM&nbsp;&nbsp;
+          </Fab>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
 
-const BucketView = ({ highlights, onChange }) => {
+const BucketView = ({
+  buckets,
+  highlights,
+  changeHighlightBucket,
+  updateBoard,
+  deleteHighlight,
+}) => {
   let rest = [];
 
-  let buckets = {};
-  highlights.forEach((highlight) => {
-    if (!highlight.bucket || highlight.bucket.trim() === "")
-      rest.push(highlight);
-    else {
-      if (!buckets[highlight.bucket]) buckets[highlight.bucket] = [];
+  let bucketMapArray = {};
+  if (buckets)
+    buckets.forEach((bkt) => {
+      bucketMapArray[bkt.id] = [];
+    });
 
-      buckets[highlight.bucket].push(highlight);
+  highlights.forEach((highlight) => {
+    if (!highlight.bucket || highlight.bucket.name === "") rest.push(highlight);
+    else {
+      if (!bucketMapArray[highlight.bucket.id])
+        bucketMapArray[highlight.bucket.id] = [];
+      bucketMapArray[highlight.bucket.id].push(highlight);
     }
   });
 
   return (
-    <div style={{ display: "flex", marginLeft: "30px" }}>
-      {Object.entries(buckets).map((bucket, index) => {
+    <div style={{ display: "flex", marginLeft: "30px", width: "fit-content" }}>
+      {Object.entries(bucketMapArray).map((bucket, index) => {
         return (
           <Bucket
             bucket={bucket}
             key={"bucket - " + index}
             index={index}
             buckets={buckets}
-            onChange={onChange}
+            onChange={changeHighlightBucket}
+            updateBoard={updateBoard}
+            deleteHighlight={deleteHighlight}
           />
         );
       })}
@@ -237,7 +384,7 @@ const BucketView = ({ highlights, onChange }) => {
               key={highlight.id}
               buckets={buckets}
               alter={(config) => {
-                onChange(highlight.id, config);
+                changeHighlightBucket(highlight.id, config);
               }}
             />
           );

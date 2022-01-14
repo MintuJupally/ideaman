@@ -26,7 +26,6 @@ import colors from "../assets/colors";
 const useStyles = makeStyles((theme) => ({
   board: {
     width: "100vw",
-    height: "100vh",
   },
   title: {
     position: "fixed",
@@ -72,36 +71,36 @@ const Board = () => {
   // }, []);
 
   const removeHighlight = (id) => {
-    setBoard({
+    console.log({ id });
+
+    const curr = {
       ...board,
       highlights: board.highlights.filter((el) => el.id !== id),
-    });
+    };
+
+    console.log(curr);
+    setBoard(curr);
   };
 
   useEffect(() => {
-    console.log({ board });
-
     if (board) {
       window.localStorage.setItem(
         board.id,
         JSON.stringify({ ...board, time: Date.now() })
       );
 
-      console.log("saving ", { board });
+      console.log(board.highlights);
     }
   }, [board]);
 
   useEffect(() => {
     const pieces = location.pathname.split("/");
-    console.log(pieces);
 
     let id = null;
     if (pieces.length === 3) id = pieces[2];
 
     let brd = null;
     if (id) brd = JSON.parse(window.localStorage.getItem(id));
-
-    console.log({ id, board });
 
     if (brd) {
       setBoard(brd);
@@ -215,6 +214,10 @@ const Board = () => {
             !bucketView ? (
               <BoardView
                 highlights={board.highlights}
+                buckets={board.buckets}
+                updateBoard={(data) => {
+                  setBoard({ ...board, ...data });
+                }}
                 updateHighlight={(id, conf) => {
                   setBoard({
                     ...board,
@@ -228,15 +231,38 @@ const Board = () => {
               />
             ) : (
               <BucketView
+                buckets={board.buckets}
                 highlights={board.highlights}
-                onChange={(id, conf) => {
-                  setBoard({
+                changeHighlightBucket={(id, conf) => {
+                  console.log({ id, conf });
+
+                  let curr = {
                     ...board,
                     highlights: board.highlights.map((el) => {
-                      if (el.id === id) return { ...el, ...conf };
+                      if (el.id === id) {
+                        console.log({ ...el, ...conf });
+                        return { ...el, ...conf };
+                      }
                       return el;
                     }),
-                  });
+                  };
+
+                  console.log(curr);
+                  setBoard((board) => null);
+                  console.log(board);
+                  // setBoard((board) => ({
+                  //   ...board,
+                  //   highlights: board.highlights.map((el) => {
+                  //     if (el.id === id) {
+                  //       console.log({ ...el, ...conf });
+                  //       return { ...el, ...conf };
+                  //     }
+                  //     return el;
+                  //   }),
+                  // }));
+                }}
+                updateBoard={(data) => {
+                  setBoard({ ...board, ...data });
                 }}
                 deleteHighlight={removeHighlight}
               />
