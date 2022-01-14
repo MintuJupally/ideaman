@@ -47,6 +47,8 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
         position.y > rect.y &&
         position.y < rect.y + rect.height
       ) {
+        console.log({ i });
+
         return buckets[i];
       }
     }
@@ -68,6 +70,8 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
       //   console.log(e, data);
       // }}
       onStop={(e, data) => {
+        console.log("from stop");
+
         let el = null;
         if (
           e.target.ariaLabel &&
@@ -98,12 +102,16 @@ const HighlightCard = ({ highlight, alter, focus, buckets }) => {
           };
 
           const bucket = findBucket(center);
+          console.log({ bucket });
 
           if (
             !bucket ||
             !highlight.bucket ||
             bucket.id !== highlight.bucket.id
           ) {
+            console.log("inside");
+
+            console.log(alter);
             alter({ bucket });
             setPos({ x: data.lastX, y: data.lastY });
           }
@@ -226,6 +234,7 @@ const Bucket = ({
           key={highlight.id}
           buckets={buckets}
           alter={(config) => {
+            console.log({ id: highlight.id, config });
             onChange(highlight.id, config);
           }}
         />
@@ -384,6 +393,7 @@ const BucketView = ({
               key={highlight.id}
               buckets={buckets}
               alter={(config) => {
+                console.log({ id: highlight.id, config });
                 changeHighlightBucket(highlight.id, config);
               }}
             />

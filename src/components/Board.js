@@ -248,7 +248,7 @@ const Board = () => {
                   };
 
                   console.log(curr);
-                  setBoard((board) => null);
+                  setBoard(curr);
                   console.log(board);
                   // setBoard((board) => ({
                   //   ...board,
